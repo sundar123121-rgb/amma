@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  
+  <!-- iOS Safari Add to Home Screen Standalone Settings -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Amma">
+  
+  <!-- PWA & Android Meta Tags -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#F0719B">
+  <meta name="description" content="Amma - Maternal & Gynecological Health Companion. Private, offline, beautiful pregnancy tracking.">
+  
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  
+  <link rel="manifest" href="manifest.json">
+  <title>Amma 🌸 Maternal Companion</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ================= TOP HEADER BAR ================= -->
+  <header class="top-bar">
+    <div class="brand-wrap">
+      <span class="brand-title">Amma 🌸</span>
+      <span class="brand-sub" id="headerSub">Day-by-Day Maternal Care</span>
+    </div>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <button class="btn-sm btn-outline" id="btnInstallGuide" title="Add to iPhone Home Screen" style="display:none; font-size:11px; padding:6px 10px;">
+        📲 Add to Home
+      </button>
+      <button class="btn-sos" id="btnSos">🚨 108 SOS</button>
+    </div>
+  </header>
+
+  <!-- ================= MAIN TAB VIEWS ================= -->
+  <main id="appMain">
+
+    <!-- ========== TAB 1: TODAY ========== -->
+    <section class="tab-content active" id="tab-today">
+      
+      <!-- iOS Install Banner (Visible in Safari Browser if not standalone) -->
+      <div id="iosInstallBanner" class="card card-rose no-print" style="display:none; border:1.5px dashed var(--primary-pink);">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <h4 style="color:var(--deep-rose); font-weight:800; font-size:14px; margin-bottom:4px;">📲 Install on your iPhone</h4>
+            <p style="font-size:11px; color:var(--text-dark); line-height:1.4;">
+              Tap Safari's <strong>Share</strong> button <span style="font-size:14px;">⎙ / 📤</span> at the bottom, then choose <strong>"Add to Home Screen"</strong> for full-screen standalone app mode!
+            </p>
+          </div>
+          <button id="dismissBanner" style="background:none; border:none; font-size:16px; color:var(--text-muted); cursor:pointer;">✕</button>
+        </div>
+      </div>
+
+      <!-- Pregnancy Stage Card -->
+      <div class="card card-rose">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <span class="badge badge-routine" id="currentTrimesterBadge">Trimester 2</span>
+            <h2 class="card-title" id="stageTitle" style="font-size:22px;">Week 20, Day 3</h2>
+            <p class="card-sub" id="stageEdd">Estimated Due Date: Oct 28, 2026</p>
+          </div>
+          <button class="btn-sm btn-outline" id="btnEditDates">⚙️ Set Dates</button>
+        </div>
+        
+        <!-- Progress bar -->
+        <div style="background:rgba(240, 113, 155, 0.15); height:10px; border-radius:5px; overflow:hidden; margin:10px 0 6px 0;">
+          <div id="pregnancyProgressBar" style="width:51%; height:100%; background:linear-gradient(90deg, var(--accent-pink), var(--deep-rose)); border-radius:5px;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted);">
+          <span id="daysCompleted">143 days elapsed</span>
+          <span id="daysRemaining">137 days to birth</span>
+        </div>
+      </div>
+
+      <!-- AI Daily Baby Vision (Strictly Today - No Future Week Peeking) -->
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h3 class="card-title">✨ AI Baby Vision for Today</h3>
+          <span class="badge badge-routine" style="font-size:10px;">Day-by-Day Only</span>
+        </div>
+        <p class="card-sub">Accurate anatomical rendering strictly for your current gestational age.</p>
+        
+        <div class="baby-image-wrap" id="babyImageContainer">
+          <img id="dailyBabyImage" src="assets/baby_stage_20w.jpg" alt="AI Baby Growth Stage">
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin:12px 0; text-align:center;">
+          <div style="background:var(--bg-cream); padding:10px 4px; border-radius:12px; border:1px solid var(--border-subtle);">
+            <div style="font-size:10px; color:var(--text-muted); font-weight:600;">BABY SIZE</div>
+            <div style="font-size:13px; font-weight:800; color:var(--deep-rose); margin-top:2px;" id="babySizeComparison">Banana 🍌</div>
+          </div>
+          <div style="background:var(--bg-cream); padding:10px 4px; border-radius:12px; border:1px solid var(--border-subtle);">
+            <div style="font-size:10px; color:var(--text-muted); font-weight:600;">EST. WEIGHT</div>
+            <div style="font-size:13px; font-weight:800; color:var(--deep-rose); margin-top:2px;" id="babyEstWeight">~300 g</div>
+          </div>
+          <div style="background:var(--bg-cream); padding:10px 4px; border-radius:12px; border:1px solid var(--border-subtle);">
+            <div style="font-size:10px; color:var(--text-muted); font-weight:600;">CRL LENGTH</div>
+            <div style="font-size:13px; font-weight:800; color:var(--deep-rose); margin-top:2px;" id="babyEstLength">~16.4 cm</div>
+          </div>
+        </div>
+
+        <div style="background:var(--soft-pink); padding:12px 14px; border-radius:12px; border:1px solid rgba(240, 113, 155, 0.2);">
+          <div style="font-weight:700; font-size:12px; color:var(--deep-rose); margin-bottom:4px;">🌱 Today's Developmental Milestone</div>
+          <p style="font-size:12px; color:var(--text-dark); line-height:1.45;" id="dailyMilestoneText">
+            Your baby is now swallowing amniotic fluid and producing meconium. Sensory nerve endings are maturing, allowing them to hear your heartbeat and voice. Vernix caseosa forms a protective coating on their delicate skin.
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Triage Symptoms Logger -->
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <div>
+            <h3 class="card-title">🩺 How are you feeling today?</h3>
+            <p class="card-sub" style="margin-bottom:0;">Automated online clinical triage classification.</p>
+          </div>
+          <button class="btn-sm btn-primary" id="btnLogComplaint">+ Log</button>
+        </div>
+
+        <div id="recentComplaintsList" style="margin-top:12px;">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Today's Trimester Diet & Hydration Guide -->
+      <div class="card">
+        <h3 class="card-title">🥗 Today's Nutrition & Diet Focus</h3>
+        <p class="card-sub" id="trimesterDietTitle">Trimester 2: Fetal skeletal growth & blood volume surge</p>
+        <ul id="trimesterDietList" style="padding-left:18px; font-size:12px; color:var(--text-dark); line-height:1.6;">
+          <li><strong>Calcium (1200 mg):</strong> Milk, fortified ragi porridge, yogurt, paneer, and sesame.</li>
+          <li><strong>Iron & Vitamin C:</strong> Steamed spinach, lentils, beetroot with squeeze of lemon for absorption.</li>
+          <li><strong>Hydration:</strong> 2.5 - 3.0 Liters clean water + tender coconut water daily.</li>
+        </ul>
+      </div>
+
+    </section>
+
+    <!-- ========== TAB 2: KICKS & BUMP ========== -->
+    <section class="tab-content" id="tab-kicks">
+
+      <!-- Scheduled Kick Counter Card -->
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <h3 class="card-title">👣 Fetal Kick Counter (Cardiff Count-to-10)</h3>
+            <p class="card-sub">Recommended post-meal when baby is most active.</p>
+          </div>
+          <button class="btn-sm btn-outline" id="btnNewPreset">+ Custom Preset</button>
+        </div>
+
+        <!-- Preset Chips -->
+        <label class="form-label" style="margin-top:4px;">Select Scheduled Session:</label>
+        <div class="chips-scroll" id="kickPresetChips">
+          <div class="chip active" data-preset="breakfast">🍳 Post-Breakfast (1 hr)</div>
+          <div class="chip" data-preset="lunch">🍲 Post-Lunch (1 hr)</div>
+          <div class="chip" data-preset="dinner">🥗 Post-Dinner (1 hr)</div>
+        </div>
+
+        <!-- Session Status -->
+        <div class="status-pills">
+          <div class="pill done" id="pillBreakfast">🍳 Breakfast: Logged</div>
+          <div class="pill" id="pillLunch">🍲 Lunch: Pending</div>
+          <div class="pill" id="pillDinner">🥗 Dinner: Pending</div>
+        </div>
+
+        <!-- Counter Box -->
+        <div class="timer-box">
+          <div style="font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase;" id="activePresetLabel">Post-Breakfast Routine</div>
+          <div class="timer-count" id="kickCountDisplay">0</div>
+          <div class="timer-sub">Fetal Movements Counted (Goal: 10)</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-top:6px;" id="kickTimerDisplay">Elapsed: 00:00</div>
+          
+          <div style="display:flex; gap:10px; margin-top:16px;">
+            <button class="btn btn-primary" id="btnKickTap" style="font-size:15px; padding:16px;">
+              👣 Baby Kicked! (+1)
+            </button>
+            <button class="btn btn-outline" id="btnKickReset" style="width:35%;">Reset</button>
+          </div>
+        </div>
+
+        <button class="btn btn-beige" id="btnSaveKickSession">💾 Complete & Save Session</button>
+
+        <div style="margin-top:14px;">
+          <h4 style="font-size:13px; font-weight:700; color:var(--deep-rose); margin-bottom:8px;">Recent Kick Logs:</h4>
+          <div id="kickHistoryList">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Baby Bump Diary Card -->
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <div>
+            <h3 class="card-title">📸 Baby Bump Diary</h3>
+            <p class="card-sub" style="margin-bottom:0;">Auto-stamped with Date & Baby's Gestational Age.</p>
+          </div>
+          <button class="btn-sm btn-primary" id="btnAddBump">+ Add Photo</button>
+        </div>
+
+        <div id="bumpGalleryContainer" style="display:grid; grid-template-columns: 1fr; gap:12px; margin-top:10px;">
+          <!-- Dynamically populated bump cards -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========== TAB 3: EXERCISE STUDIO & DIET ========== -->
+    <section class="tab-content" id="tab-studio">
+
+      <div class="card card-rose">
+        <h3 class="card-title">🧘‍♀️ Prenatal Exercise & Yoga Studio</h3>
+        <p class="card-sub">Trimester-safe routines with guided breathing animations, timers, and video tutorials.</p>
+      </div>
+
+      <!-- Exercise list -->
+      <div id="exerciseListContainer">
+        <!-- Dynamically rendered exercises -->
+      </div>
+
+      <!-- Complete Diet Plan Deep Dive -->
+      <div class="card">
+        <h3 class="card-title">🥗 Comprehensive Maternal Nutrition Guide</h3>
+        <p class="card-sub">Evidence-based guidelines tailored for Indian & global diets.</p>
+
+        <div class="chips-scroll" id="trimesterDietTabs">
+          <div class="chip active" data-trimester="1">Trimester 1 (Weeks 1-12)</div>
+          <div class="chip" data-trimester="2">Trimester 2 (Weeks 13-27)</div>
+          <div class="chip" data-trimester="3">Trimester 3 (Weeks 28-40)</div>
+        </div>
+
+        <div id="detailedDietContent" style="margin-top:12px; font-size:12px; line-height:1.5;">
+          <!-- Dynamically loaded -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========== TAB 4: LABOR & VITALS ========== -->
+    <section class="tab-content" id="tab-labor">
+
+      <!-- Contraction Timer & 5-1-1 Rule Alert -->
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h3 class="card-title">⏱️ Labor Contraction Timer</h3>
+          <span class="badge badge-emergency" id="badge511Alert" style="display:none;">⚠️ 5-1-1 RULE ACTIVE</span>
+        </div>
+        <p class="card-sub">Track frequency & duration. Amma alerts you when it's time to head to the hospital.</p>
+
+        <div class="timer-box">
+          <div style="font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase;" id="contractionStatusLabel">Ready to Time</div>
+          <div class="timer-count" id="contractionDurationDisplay">00:00</div>
+          <div class="timer-sub" id="contractionSummarySub">Frequency: -- | Avg Duration: --</div>
+
+          <div style="display:flex; gap:10px; margin-top:16px;">
+            <button class="btn btn-primary" id="btnToggleContraction" style="font-size:15px; padding:16px;">
+              ▶ Start Contraction
+            </button>
+            <button class="btn btn-outline" id="btnClearContractions" style="width:30%;">Clear</button>
+          </div>
+        </div>
+
+        <div id="contraction511Banner" style="display:none; background:#FFEBEE; border:1.5px solid var(--alert-emergency); padding:12px; border-radius:12px; margin-bottom:12px;">
+          <strong style="color:var(--alert-emergency); font-size:13px;">🚨 5-1-1 Rule Reached!</strong>
+          <p style="font-size:11px; color:#5D1010; margin-top:4px; line-height:1.4;">
+            Your contractions are coming every 5 minutes or less, lasting about 1 minute each, consistently for 1 hour. Grab your hospital bag and contact your obstetrician or hospital EMS now!
+          </p>
+        </div>
+
+        <h4 style="font-size:13px; font-weight:700; color:var(--deep-rose); margin-bottom:8px;">Contraction Log:</h4>
+        <div id="contractionHistoryList">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Maternal Vitals Tracker -->
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <div>
+            <h3 class="card-title">🩺 Maternal Vitals & Clinical Alerts</h3>
+            <p class="card-sub" style="margin-bottom:0;">Automated Preeclampsia (BP) & GDM (Sugar) safety checks.</p>
+          </div>
+          <button class="btn-sm btn-primary" id="btnAddVitals">+ Record</button>
+        </div>
+
+        <div id="vitalsHistoryList">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Hospital Maternity Bag Checklist -->
+      <div class="card">
+        <h3 class="card-title">🎒 Hospital Maternity Bag Checklist</h3>
+        <p class="card-sub">Preparedness items for Labor & Delivery.</p>
+        <div id="bagChecklistContainer">
+          <!-- Dynamically populated checkboxes -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========== TAB 5: DOCTOR & NST ========== -->
+    <section class="tab-content" id="tab-reports">
+
+      <!-- Doctor Consultation Report Export -->
+      <div class="card card-rose">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h3 class="card-title">📋 Clinical Doctor Consultation Summary</h3>
+            <p class="card-sub" style="margin-bottom:0;">Zero cloud. Generates a clinical-grade PDF for your OB-GYN visit.</p>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="btnGenerateDoctorPdf" style="margin-top:14px;">
+          📄 View & Export Consultation PDF
+        </button>
+      </div>
+
+      <!-- NST / CTG Strip Upload & Parameters Hub -->
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <h3 class="card-title">📈 Non-Stress Test (NST / CTG) Hub</h3>
+            <p class="card-sub">Upload trace photo & enter clinical cardiotocography data.</p>
+          </div>
+          <button class="btn-sm btn-primary" id="btnAddNstScan">+ Upload NST</button>
+        </div>
+
+        <div id="nstRecordsContainer" style="margin-top:10px;">
+          <!-- Dynamically populated NST entries -->
+        </div>
+      </div>
+
+      <!-- Complete Medical Reports Hub -->
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <div>
+            <h3 class="card-title">📁 All Investigation Reports</h3>
+            <p class="card-sub" style="margin-bottom:0;">Ultrasounds, Blood tests, Urine analysis under one roof.</p>
+          </div>
+          <button class="btn-sm btn-outline" id="btnAddGeneralReport">+ Add Report</button>
+        </div>
+
+        <div id="generalReportsList">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ================= BOTTOM NAVIGATION BAR ================= -->
+  <nav class="bottom-nav no-print">
+    <button class="nav-item active" data-tab="tab-today">
+      <span class="icon">🌸</span>
+      <span>Today</span>
+    </button>
+    <button class="nav-item" data-tab="tab-kicks">
+      <span class="icon">👣</span>
+      <span>Kicks</span>
+    </button>
+    <button class="nav-item" data-tab="tab-studio">
+      <span class="icon">🧘‍♀️</span>
+      <span>Studio</span>
+    </button>
+    <button class="nav-item" data-tab="tab-labor">
+      <span class="icon">🩺</span>
+      <span>Vitals</span>
+    </button>
+    <button class="nav-item" data-tab="tab-reports">
+      <span class="icon">📋</span>
+      <span>Reports</span>
+    </button>
+  </nav>
+
+  <!-- ================= MODALS & BOTTOM SHEETS ================= -->
+
+  <!-- MODAL: Exercise Studio Canvas Player -->
+  <div class="modal-overlay" id="modalExercisePlayer">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3 class="modal-title" id="playerExerciseTitle">Pelvic Floor (Kegels)</h3>
+        <button class="modal-close" id="btnCloseExercisePlayer">✕</button>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="exerciseCanvas" width="400" height="240"></canvas>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0;">
+        <div>
+          <span style="font-size:11px; color:var(--text-muted); font-weight:600;">ACTIVE PHASE</span>
+          <div style="font-size:16px; font-weight:800; color:var(--deep-rose);" id="playerPhaseLabel">Inhale & Contract</div>
+        </div>
+        <div style="text-align:right;">
+          <span style="font-size:11px; color:var(--text-muted); font-weight:600;">REPETITION</span>
+          <div style="font-size:16px; font-weight:800; color:var(--primary-pink);" id="playerRepsLabel">1 / 10</div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:8px; margin:10px 0;">
+        <button class="btn btn-primary" id="btnPlayerToggle">▶ Start Guided Session</button>
+        <button class="btn btn-outline" id="btnPlayerReset" style="width:30%;">Reset</button>
+      </div>
+
+      <div style="background:var(--bg-cream); padding:12px; border-radius:12px; font-size:12px; line-height:1.45; margin-top:8px;">
+        <strong style="color:var(--deep-rose);">Clinical Technique & Tips:</strong>
+        <p id="playerExerciseInstructions" style="margin-top:4px; color:var(--text-dark);">
+          Tighten your pelvic floor muscles as if stopping the flow of urine. Hold for 5 seconds, then relax for 5 seconds. Breathe smoothly without straining abdominal muscles.
+        </p>
+      </div>
+
+      <div id="playerVideoLinkWrap" style="margin-top:10px;">
+        <a id="playerVideoLink" href="https://www.youtube.com/results?search_query=prenatal+kegel+exercise+tutorial" target="_blank" class="btn btn-outline" style="text-decoration:none;">
+          📺 Watch Video Tutorial Online ↗
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Add Custom Kick Preset -->
+  <div class="modal-overlay" id="modalAddPreset">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3 class="modal-title">✨ Add Custom Kick Preset</h3>
+        <button class="modal-close" id="btnClosePresetModal">✕</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Preset Name</label>
+        <input type="text" class="form-control" id="customPresetName" placeholder="e.g. Mid-Day Relaxation / 4 PM Snack">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Target Duration (Minutes)</label>
+        <input type="number" class="form-control" id="customPresetDuration" value="60">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Target Kicks (Cardiff Standard is 10)</label>
+        <input type="number" class="form-control" id="customPresetTarget" value="10">
+      </div>
+      <button class="btn btn-primary" id="btnSaveCustomPreset">Save Preset</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Add NST CTG Scan & Clinical Parameters -->
+  <div class="modal-overlay" id="modalAddNst">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3 class="modal-title">📈 Record Non-Stress Test (NST)</h3>
+        <button class="modal-close" id="btnCloseNstModal">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">1. Upload or Snap NST Paper Strip</label>
+        <input type="file" accept="image/*" class="form-control" id="nstImageInput">
+        <div id="nstImagePreviewWrap" style="display:none; margin-top:8px;" class="nst-strip-wrap">
+          <img id="nstImagePreview" src="" alt="NST Strip Preview">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">2. Baseline Fetal Heart Rate (bpm)</label>
+        <input type="number" class="form-control" id="nstBaselineFhr" placeholder="120 - 160 bpm is normal" value="142">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">3. Accelerations (>= 2 in 20 min)</label>
+        <select class="form-control" id="nstAccelerations">
+          <option value="Present (Reactive: >=2 accelerations of 15 bpm for 15 sec)">Present (Reactive: >=2 accelerations)</option>
+          <option value="Absent (<2 accelerations in 40 min)">Absent (Non-Reactive)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">4. Decelerations</label>
+        <select class="form-control" id="nstDecelerations">
+          <option value="None">None (Reassuring)</option>
+          <option value="Early (Head compression during contraction)">Early (Head Compression)</option>
+          <option value="Variable (Cord compression)">Variable (Cord Compression)</option>
+          <option value="Late (Uteroplacental insufficiency - Urgent)">Late (Uteroplacental insufficiency)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">5. Baseline Variability</label>
+        <select class="form-control" id="nstVariability">
+          <option value="Moderate (6 - 25 bpm - Normal)">Moderate (6 - 25 bpm - Normal)</option>
+          <option value="Minimal (<= 5 bpm)">Minimal (<= 5 bpm)</option>
+          <option value="Marked (> 25 bpm)">Marked (> 25 bpm)</option>
+          <option value="Absent (0 bpm - Severe)">Absent (0 bpm - Severe)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">6. Clinical Conclusion</label>
+        <select class="form-control" id="nstConclusion">
+          <option value="Reactive (Category I - Reassuring)">Reactive (Category I - Reassuring)</option>
+          <option value="Equivocal / Suspicious (Category II)">Equivocal / Suspicious (Category II)</option>
+          <option value="Non-Reactive (Category III - Urgent Review)">Non-Reactive (Category III - Urgent Review)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">7. Doctor / Clinical Notes</label>
+        <textarea class="form-control" id="nstNotes" rows="2" placeholder="e.g. Test performed at Cloudnine Hospital. Fetal movement observed."></textarea>
+      </div>
+
+      <button class="btn btn-primary" id="btnSaveNstRecord">Save NST Report</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Add Bump Photo -->
+  <div class="modal-overlay" id="modalAddBump">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3 class="modal-title">📸 Add Baby Bump Memory</h3>
+        <button class="modal-close" id="btnCloseBumpModal">✕</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Select Bump Photo</label>
+        <input type="file" accept="image/*" class="form-control" id="bumpImageInput">
+        <div id="bumpImagePreviewWrap" style="display:none; margin-top:8px; height:200px; border-radius:12px; overflow:hidden;">
+          <img id="bumpImagePreview" src="" alt="Bump Preview" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Gestational Age Stamp</label>
+        <input type="text" class="form-control" id="bumpAgeStamp" readonly>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Memory Notes</label>
+        <textarea class="form-control" id="bumpNotes" rows="2" placeholder="e.g. Halfway there! Baby started kicking right after mom ate mango ice cream."></textarea>
+      </div>
+      <button class="btn btn-primary" id="btnSaveBumpPhoto">Save to Bump Diary</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Add Symptom / Complaint -->
+  <div class="modal-overlay" id="modalAddComplaint">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3 class="modal-title">🩺 Log Symptom / Complaint</h3>
+        <button class="modal-close" id="btnCloseComplaintModal">✕</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Select Symptom or Type Custom</label>
+        <select class="form-control" id="selectSymptomPreset">
+          <option value="">-- Choose Common Symptom --</option>
+          <option value="Mild morning nausea / queasiness">Mild morning nausea / queasiness</option>
+          <option value="Frequent mild urination without burning">Frequent mild urination without burning</option>
+          <option value="Lower backache after standing">Lower backache after standing</option>
+          <option value="Swelling in feet after long day">Swelling in feet after long day</option>
+          <option value="Severe sudden headache with visual blur">Severe sudden headache with visual blur (Urgent)</option>
+          <option value="Decreased fetal movements <10 kicks in 2h">Decreased fetal movements &lt;10 kicks (Urgent)</option>
+          <option value="Sudden puffiness of face & hands">Sudden puffiness of face &amp; hands (Urgent)</option>
+          <option value="Bright red vaginal bleeding or spotting">Bright red vaginal bleeding (EMERGENCY)</option>
+          <option value="Sudden rush or trickle of clear fluid">Sudden rush of fluid / water broke (EMERGENCY)</option>
+          <option value="Severe sharp unremitting abdominal pain">Severe sharp abdominal pain (EMERGENCY)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Detailed Notes / Onset Time</label>
+        <textarea class="form-control" id="complaintNotes" rows="2" placeholder="e.g. Started after lunch, lasts about 15 minutes..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Severity Level</label>
+        <select class="form-control" id="complaintSeverity">
+          <option value="routine">Routine (Mild - Discuss at next routine visit)</option>
+          <option value="urgent">Urgent (Contact OB-GYN clinic within 24h)</option>
+          <option value="emergency">EMERGENCY (Go to EMS / Hospital Labor Room immediately)</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="btnSaveComplaint">Log Symptom</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Add Vitals -->
+  <div class="modal-overlay" id="modalAddVitals">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3 class="modal-title">🩺 Record Maternal Vitals</h3>
+        <button class="modal-close" id="btnCloseVitalsModal">✕</button>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <div class="form-group">
+          <label class="form-label">BP Systolic (mmHg)</label>
+          <input type="number" class="form-control" id="vitalBpSystolic" placeholder="110-120">
+        </div>
+        <div class="form-group">
+          <label class="form-label">BP Diastolic (mmHg)</label>
+          <input type="number" class="form-control" id="vitalBpDiastolic" placeholder="70-80">
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <div class="form-group">
+          <label class="form-label">Blood Sugar (mg/dL)</label>
+          <input type="number" class="form-control" id="vitalBloodSugar" placeholder="e.g. 92">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sugar Context</label>
+          <select class="form-control" id="vitalSugarContext">
+            <option value="Fasting">Fasting (&lt;95 mg/dL)</option>
+            <option value="1h Post-Meal">1h Post-Meal (&lt;140 mg/dL)</option>
+            <option value="2h Post-Meal">2h Post-Meal (&lt;120 mg/dL)</option>
+            <option value="Random">Random</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Maternal Weight (kg)</label>
+        <input type="number" step="0.1" class="form-control" id="vitalWeight" placeholder="e.g. 64.5">
+      </div>
+      <button class="btn btn-primary" id="btnSaveVitals">Save Vitals</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Doctor Consultation PDF View & Print -->
+  <div class="modal-overlay" id="modalDoctorSummary">
+    <div class="modal-sheet" style="max-height:94vh;">
+      <div class="modal-header no-print">
+        <h3 class="modal-title">📋 OB-GYN Clinical Consultation PDF</h3>
+        <button class="modal-close" id="btnCloseDoctorSummary">✕</button>
+      </div>
+
+      <div id="doctorPrintContent" style="padding:10px 0;">
+        <!-- Clean Medical PDF Format Generated Dynamically -->
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:14px;" class="no-print">
+        <button class="btn btn-primary" id="btnPrintDoctorPdf">🖨️ Print / Save as PDF</button>
+        <button class="btn btn-outline" id="btnCloseDoctorSummaryBtn" style="width:35%;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Emergency SOS Action Sheet -->
+  <div class="modal-overlay" id="modalSos">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color:var(--alert-emergency);">🚨 Emergency Medical Assistance</h3>
+        <button class="modal-close" id="btnCloseSosModal">✕</button>
+      </div>
+      <p style="font-size:12px; color:var(--text-dark); margin-bottom:14px; line-height:1.45;">
+        If you experience heavy bleeding, severe unremitting pain, fluid gush, or convulsions, seek immediate emergency hospital care.
+      </p>
+
+      <a href="tel:108" class="btn" style="background:var(--alert-emergency); color:#fff; text-decoration:none; margin-bottom:10px;">
+        📞 Call 108 Ambulance (EMS Direct)
+      </a>
+
+      <a href="tel:112" class="btn btn-beige" style="text-decoration:none; margin-bottom:10px;">
+        📞 Call 112 All-India Emergency
+      </a>
+
+      <div class="form-group" style="margin-top:14px;">
+        <label class="form-label">Primary Obstetrician / Hospital Contact</label>
+        <div style="display:flex; gap:8px;">
+          <input type="tel" class="form-control" id="customEmergencyPhone" placeholder="+91 9876543210" value="+91 9876543210">
+          <button class="btn btn-primary" id="btnSaveEmergencyPhone" style="width:auto; padding:0 14px; margin:0;">Save</button>
+        </div>
+      </div>
+
+      <a id="btnCallDoctor" href="tel:+919876543210" class="btn btn-outline" style="text-decoration:none;">
+        📞 Call Doctor / Hospital
+      </a>
+    </div>
+  </div>
+
+  <!-- MODAL: Set Gestational Dates -->
+  <div class="modal-overlay" id="modalSetDates">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3 class="modal-title">🌸 Pregnancy Date Settings</h3>
+        <button class="modal-close" id="btnCloseDatesModal">✕</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mother's Name</label>
+        <input type="text" class="form-control" id="inputMotherName" value="Priya Sharma">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Last Menstrual Period (LMP) Date</label>
+        <input type="date" class="form-control" id="inputLmpDate">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Estimated Due Date (EDD)</label>
+        <input type="date" class="form-control" id="inputEddDate">
+      </div>
+      <p style="font-size:11px; color:var(--text-muted); line-height:1.4;">
+        Note: The daily baby image and milestones are calculated strictly according to your current gestational day from your LMP/EDD.
+      </p>
+      <button class="btn btn-primary" id="btnSaveDates" style="margin-top:12px;">Save & Recalculate</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Add General Report -->
+  <div class="modal-overlay" id="modalAddGeneralReport">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3 class="modal-title">📁 Add Investigation Report</h3>
+        <button class="modal-close" id="btnCloseGeneralReportModal">✕</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Report Title</label>
+        <input type="text" class="form-control" id="reportTitle" placeholder="e.g. 2nd Trimester Anomaly Scan / CBC Blood Test">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-control" id="reportCategory">
+          <option value="Ultrasound Scan">Ultrasound Scan (NT / Anomaly / Growth)</option>
+          <option value="Blood Investigation">Blood Investigation (CBC / Thyroid / GCT)</option>
+          <option value="Urine Analysis">Urine Analysis (Protein / Culture)</option>
+          <option value="Genetic Screening">Genetic Screening (Double / Quadruple / NIPT)</option>
+          <option value="Vaccination">Vaccination (Tetanus / Tdap / Flu)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Findings & Summary</label>
+        <textarea class="form-control" id="reportFindings" rows="2" placeholder="e.g. Placenta posterior, AFI 14 cm, normal fetal anatomy."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Attach Photo / Document (Optional)</label>
+        <input type="file" accept="image/*,.pdf" class="form-control" id="reportFileInput">
+      </div>
+      <button class="btn btn-primary" id="btnSaveGeneralReport">Save Report</button>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="js/app.js"></script>
+  <script>
+    // Register Service Worker for offline PWA operation
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('Amma PWA Service Worker registered:', reg.scope))
+          .catch(err => console.log('Amma Service Worker registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>
